@@ -1,9 +1,17 @@
 # Checking DNS Domain Expiration
 
-If you are here you may have had a domain expire and dealt with the annoyances that go with reclaiming it. It's no fun is it? To prevent yourself from dealing with this again you can install and run dns-domain-expiration-checker.py to monitor your domains. The script is easy to install and will send you an e-mail if your domain is set to expire in the near future. You can also use the script to view the registrars and expiration dates for your domains. Now to some examples.
+* Format domain file
 
-To interactively view the expiration dates and registrars for a list of domains run the script with the "--interactive
-" option:
+<pre>
+$ cat domains
+spotch.com 60
+yahoo.com 60
+prefetch.net 2000
+google.com 80
+</pre>
+
+* Untuk melihat secara langsung tanggal expire domain bisa dengan opsi --interactive
+
 <pre>
 $ dns-domain-expiration-checker.py --interactive --domainfile domains
 Domain Name                Registrar                       Expiration Date       Days Left
@@ -12,50 +20,31 @@ spotch.com                 GANDI SAS                       2017-12-03 00:00:00  
 google.com                 MARKMONITOR INC.                2020-09-14 00:00:00   1147
 </pre>
 
-To generate an e-mail when a domain is about to expire you can pass a domain and threshold to the script:
+* Untuk alert ke email jika sudah mendekati expire
 
 <pre>
-$ dns-domain-expiration-checker.py --domainname prefetch.net --email --expiredays 90
-</pre>
-
-This will generate an e-mail if the domain prefetch.net is set to expire in the next 90-days. You can also add several domains and expiration intervals to a file and pass that as an argument:
-
-<pre>
-$ cat domains
-spotch.com 60
-yahoo.com 60
-prefetch.net 2000
-google.com 80
+$ dns-domain-expiration-checker.py --domainname prefetch.net --email --smtpfrom "root@mail.com" --smtpto "admin@mail.com" --expiredays 90
 
 $ dns-domain-expiration-checker.py --domainfile domains --email --smtpserver smtp.mydomain --smtpto "biff" --smtpfrom "Root"
 </pre>
 
 # Installation
 
-The dns-domain-expiration-checker.py script relies on the dateutil PiPY pacakge to normalize dates. Here are the steps to get this script working:
+* Ubuntu based OS:
 
-1. Create a virtualenv to run dns-domain-expiration-checker in:
 <pre>
-$ mkproject dns-domain-expiration-checker
+apt install virtualenv -y
+cd /data/ && virtualenv python-domain
+cd python-domain && source bin/activate
+pip install python-dateutil
+git clone https://github.com/widyamedia/domain-check
+cd domain-check
 </pre>
-2. Surf over to that new environment:
-<pre>
-$ workon dns-domain-expiration-checker
-</pre>
-3. Pull down dateutils with pip:
-<pre>
-$ pip install python-dateutil
-</pre>
-4. Clone this repo:
-<pre>
-$ git clone https://github.com/Matty9191/dns-domain-expiration-checker.git
-</pre>
-5. Run the script against the domains you want to check (this assume you are in the root of your virtualenv):
-<pre>
-$ dns-domain-expiration-checker/ns-domain-expiration-checker.py ....
-</pre>
-6. Automate the domain checking process.
 
+* Pasang di crontab untuk menjalankan setiap bulan
 
+3 3 3 * * /data/python-domain/domain-check/domain-check.sh
 
+# Thanks
 
+Forked from: https://github.com/Matty9191/dns-domain-expiration-checker
